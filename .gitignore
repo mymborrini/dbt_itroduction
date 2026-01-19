@@ -1,0 +1,3 @@
+./loader/load_venv
+./generator/gen_venv
+./dbt_workspace/dbt_venv
