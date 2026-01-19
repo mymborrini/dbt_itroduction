@@ -10,7 +10,7 @@ sources:
     loaded_at_field: updatedat
 
     tables:
-      - name: cust 
+      - name: customers 
         identifier: customers 
         description: The customers table form order management system(OMS)
         columns:
@@ -18,3 +18,16 @@ sources:
             tests:
               - not_null
               - string_not_empty
+      - name: orders 
+        identifier: orders
+      - name: stores 
+        identifier: stores
+      - name: employees 
+        identifier: employees
+      - name: suppliers 
+        identifier: suppliers
+      - name: orderitems 
+        identifier: orderitems
+      - name: products 
+        identifier: products
+

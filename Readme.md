@@ -343,7 +343,7 @@ The ref functions we have been using so far is part of the jinja functions. Jinj
 
 1. Everything which is wrapped within {% ... %}, is called *Control Statements*. For example
 
-```jinja2
+```sql
 {% set variable_a = 10 %}
 {% if name == "Bard": %}...{% endif %}
 {% for i in range(variable_a) %} ... {% endfor %}
@@ -351,7 +351,7 @@ The ref functions we have been using so far is part of the jinja functions. Jinj
 
 2. Everything whcih is wrapped inside {{ ... }} is called *Expression*. For example:
 
-```jinja2
+```sql
 {{ 10 + 20 }}
 {{ variable_a }}
 ```
@@ -362,7 +362,7 @@ The ref functions we have been using so far is part of the jinja functions. Jinj
 
 You can see a resume of it in the following code
 
-```jinja2
+```sql
 {# This Jinja code generates select statements to pring numbers from 0 to 9 #}
 {% set max_number = 10 %}
 {% for i in range(max_number) %}
@@ -377,4 +377,44 @@ Which print SELECT 1 as number UNION SELECT 2 as number UNION SELECT 3 as number
 
 ### A practical Example
 
-We want to populate our test environment using jinja
+We want to check our test environment using jinja, to see if the database is properly populated, otherwise our tests will be useless.
+As we see before, if the test sql returns a record it will result a test failure. Now we can proceed in executing the tests
+
+
+```bash
+dbt test --select record_count_check
+```
+
+Jinja has different uses beyond testing. For example it can generate dynamic sql for a dbt model
+
+```sql
+{% set payment_methods = ["bank_transfer", "credit_card", "gift_card"] %}
+
+select
+    order_id,
+    {% for payment_method in payment_methods %}
+    sum(case when payment_method = '{{payment_method}}' then amount end) as {{payment_method}}_amount,
+    {% endfor %}
+    sum(amount) as total_amount
+from app_data.payments
+group by 1
+```
+
+Or how jinja cna generate dynamic yaml configuration
+
+```yml
+jaffle_shop:
+  target: dev
+  outputs:
+    dev:
+      type: redshift
+      host: "{{ env_var('DBT_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASS') }}"
+      port: 5439
+      dbname: analytics
+      schema: dbt_dbanin
+      threads: 4
+```
+
+## Jinja and macros
