@@ -1,0 +1,20 @@
+sources:
+  - name: landing
+    description: The Primary source system for order management system(OMS) data analysis
+    database: analytics
+    schema: public
+
+    freshness:
+      warn_after: { count: 1, period: day }
+      error_after: { count: 3, period: day }
+    loaded_at_field: updatedat
+
+    tables:
+      - name: cust 
+        identifier: customers 
+        description: The customers table form order management system(OMS)
+        columns:
+          - name: address
+            tests:
+              - not_null
+              - string_not_empty

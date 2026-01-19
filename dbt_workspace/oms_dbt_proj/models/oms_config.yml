@@ -1,0 +1,29 @@
+models:
+  - name: customers_stg
+    description: Staged customer data from order management system (OMS), with minor row-level transformations
+    columns:
+      - name: email
+        description: Customer's Primary Email address for promotions and offers
+        tests:
+          - string_not_empty
+  
+  - name: orders_stg
+    columns:
+      - name: orderid
+        tests:
+          - unique
+          - not_null
+  
+      - name: statuscd
+        description: "{{ doc('StatusCD') }}"
+        tests:
+          - accepted_values:
+              values: ['01','02','03']
+
+  - name: orderitems_stg
+    columns:
+      - name: orderid
+        tests:
+          - relationships:
+              to: ref('orders_stg')
+              field: orderid
