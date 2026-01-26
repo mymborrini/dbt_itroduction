@@ -418,3 +418,62 @@ jaffle_shop:
 ```
 
 ## Jinja and macros
+
+A macro is a code block written in sql and jinja. It's usuful for reusing a particular code block inside modules
+
+For example, let's suppose we have this sql query
+
+```sql
+select 
+  zipcode,
+  city,
+  month,
+  avg_tmp_fahrenhait,
+  round((avg_tmp_fahrenheit - 32) * 5/9, 1) as avg_tmp_celsius
+from city_temperature
+```
+
+We can write a macro as wht following
+
+```sql
+{% macro to_celsius(fahrenheit_column, decimal_places=1) %}
+  round(({{ fahrenheit_column }} - 32) * 5/9, {{ decimal_places }}) 
+{% endmacro %}
+```
+
+In this case decimal_places=1 we set a default value. The sql code can be rewritten like the following
+
+
+```sql
+select 
+  zipcode,
+  city,
+  month,
+  avg_tmp_fahrenhait,
+  {{ to_celsius('avg_tmp_fahrenhait') }} as avg_tmp_celsius
+from city_temperature
+```
+
+Please note there is no return statement, the last statement will be returned.
+
+Let's assume we have us_sales as a raw table we have to calculate the total revenue, the total cost, the total profit
+
+- Total Revenue = sum(quantity_sold * retail_price)
+- Total Cost = sum(quantity_sold * purchase_cost)
+- Total Profit = Total Revenue - Total Cost
+
+So we create a model in dbt `profit_fact.sql`
+
+But what happened if we want to create something like this:
+
+Source tables   Target_tables/view
+sales_state1    profit_state1
+sales_state2    profit_state2
+....
+
+
+So a view for each state? Instead of repeating the same logic we can use macro. We can define multiple macros across the same file.
+
+Let's keep it simple for now. Create a macro `generate_profit_model.sql`, and create two silver model `profit_state1` and `profit_state_2`.
+
+Remember that *One dbt model -> One DB object(table/view)*
