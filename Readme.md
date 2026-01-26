@@ -476,4 +476,5 @@ So a view for each state? Instead of repeating the same logic we can use macro. 
 
 Let's keep it simple for now. Create a macro `generate_profit_model.sql`, and create two silver model `profit_state1` and `profit_state_2`.
 
-Remember that *One dbt model -> One DB object(table/view)*
+1. Remember that *One dbt model -> One DB object(table/view)*
+2. Remamber that dbt execute macro at compile time and sql query at run time, so in case you have to execute a query inside a macro you have to pass as string and then execute them using sql-jinja syntax
